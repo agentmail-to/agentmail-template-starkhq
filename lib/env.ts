@@ -14,6 +14,15 @@ export const env = {
     get ANTHROPIC_API_KEY() {
         return process.env.ANTHROPIC_API_KEY;
     },
+    get OPENAI_API_KEY() {
+        return process.env.OPENAI_API_KEY;
+    },
+    get AI_PROVIDER() {
+        return process.env.AI_PROVIDER;
+    },
+    get AI_MODEL_ID() {
+        return process.env.AI_MODEL_ID;
+    },
     get EXA_API_KEY() {
         return process.env.EXA_API_KEY;
     },

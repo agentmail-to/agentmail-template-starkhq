@@ -2,7 +2,7 @@
 
 A Vercel template for spinning up **named AI assistants that each have their own email address**. They coordinate over email with real people, read their own inbox, and execute end-to-end — Friday plans a dinner with three friends and books the restaurant; Pepper sources quotes from vendors and confirms the booking; Happy triages your inbound mail and only escalates what's worth your attention.
 
-Powered by [AgentMail](https://agentmail.to), the [AI SDK](https://ai-sdk.dev), [Anthropic Claude](https://anthropic.com), and [Exa](https://exa.ai).
+Powered by [AgentMail](https://agentmail.to), the [AI SDK](https://ai-sdk.dev), and [Exa](https://exa.ai). Provider-agnostic — works with Anthropic or OpenAI, your pick.
 
 ## TL;DR
 
@@ -69,7 +69,7 @@ The template ships with three Tony-Stark-flavored assistants:
 - **Node.js 22.x** (or whatever your Next 16 deployment target requires).
 - **pnpm** (the template uses `pnpm` lockfile, but `npm` / `yarn` / `bun` work fine — just regenerate the lock).
 - **An AgentMail account** with at least one **verified domain** ([dashboard](https://agentmail.to/dashboard)). Without a verified domain, assistants provision under the shared `agentmail.to` subdomain, where common usernames like `friday` are already globally claimed (the template's suffix-retry logic handles that, but you'll get `friday-3oac@agentmail.to` instead of `friday@yourdomain.com`).
-- **An Anthropic API key** ([console.anthropic.com](https://console.anthropic.com)).
+- **An AI provider API key** — either Anthropic ([console.anthropic.com](https://console.anthropic.com)) or OpenAI ([platform.openai.com](https://platform.openai.com)). Pick whichever you already have; toggle via `AI_PROVIDER` env.
 - **An Exa API key** ([dashboard.exa.ai](https://dashboard.exa.ai)).
 
 ## Quick start
@@ -79,8 +79,8 @@ git clone https://github.com/agentmail-to/agentmail-template-starkhq
 cd agentmail-template-starkhq
 pnpm install
 cp .env.example .env.local
-# fill in AGENTMAIL_API_KEY, AGENTMAIL_DOMAIN, ANTHROPIC_API_KEY,
-# EXA_API_KEY, and PRINCIPAL_EMAIL
+# fill in AGENTMAIL_API_KEY, AGENTMAIL_DOMAIN, your AI provider key
+# (ANTHROPIC_API_KEY or OPENAI_API_KEY), EXA_API_KEY, and PRINCIPAL_EMAIL
 pnpm dev
 ```
 
@@ -88,7 +88,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Deploy to Vercel
 
-[Deploy](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fagentmail-to%2Fagentmail-template-starkhq&project-name=agentmail-template-starkhq&repository-name=agentmail-template-starkhq&env=AGENTMAIL_API_KEY,AGENTMAIL_DOMAIN,ANTHROPIC_API_KEY,EXA_API_KEY,PRINCIPAL_EMAIL&envDescription=AgentMail%20gives%20each%20assistant%20an%20inbox.%20Anthropic%20powers%20the%20agent%20loop.%20Exa%20enables%20web%20search.&envLink=https%3A%2F%2Fgithub.com%2Fagentmail-to%2Fagentmail-template-starkhq%23environment-variables)
+[Deploy](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fagentmail-to%2Fagentmail-template-starkhq&project-name=agentmail-template-starkhq&repository-name=agentmail-template-starkhq&env=AGENTMAIL_API_KEY,AGENTMAIL_DOMAIN,ANTHROPIC_API_KEY,OPENAI_API_KEY,AI_PROVIDER,EXA_API_KEY,PRINCIPAL_EMAIL&envDescription=AgentMail%20gives%20each%20assistant%20an%20inbox.%20Pick%20Anthropic%20or%20OpenAI%20to%20power%20the%20agent%20loop.%20Exa%20enables%20web%20search.&envLink=https%3A%2F%2Fgithub.com%2Fagentmail-to%2Fagentmail-template-starkhq%23environment-variables)
 
 No database to provision. Just paste the five environment variables when prompted.
 
@@ -98,7 +98,10 @@ No database to provision. Just paste the five environment variables when prompte
 |--------------------------------|----------|-------------------------------------------------------------------------|
 | `AGENTMAIL_API_KEY`            | yes      | Sending/receiving email, opening the WS, managing lists                 |
 | `AGENTMAIL_DOMAIN`             | recommended | A domain you've verified in your AgentMail dashboard                 |
-| `ANTHROPIC_API_KEY`            | yes      | Powers the agent loop (`claude-sonnet-4-6`)                             |
+| `AI_PROVIDER`                  | optional | `anthropic` (default) or `openai`                                       |
+| `ANTHROPIC_API_KEY`            | one of   | Required when `AI_PROVIDER=anthropic` (the default)                     |
+| `OPENAI_API_KEY`               | one of   | Required when `AI_PROVIDER=openai`                                      |
+| `AI_MODEL_ID`                  | optional | Override the model id. Defaults: `claude-sonnet-4-6` / `gpt-4o`         |
 | `EXA_API_KEY`                  | yes      | Web search tool for venue / vendor research                             |
 | `PRINCIPAL_EMAIL`              | yes      | Your email; assistants use it for `forward_to_principal` escalations    |
 | `AGENTMAIL_USERNAME_<ID>`      | optional | Override an assistant's local-part (e.g. `AGENTMAIL_USERNAME_FRIDAY=tony-friday`) |
@@ -115,8 +118,8 @@ Missing keys surface as **clear errors in the UI** (`Missing required env var: �
 | UI               | React 19 + [Tailwind CSS v4](https://tailwindcss.com)                                 |
 | Markdown         | [react-markdown](https://github.com/remarkjs/react-markdown) + remark-gfm (for tables)|
 | Email primitive  | [AgentMail SDK](https://docs.agentmail.to) (`agentmail` 0.5.x)                        |
-| AI primitive     | [Vercel AI SDK v6](https://ai-sdk.dev) + `@ai-sdk/anthropic`, `@ai-sdk/react`         |
-| Model            | Anthropic Claude (`claude-sonnet-4-6` by default; see `lib/agent.ts`)                 |
+| AI primitive     | [Vercel AI SDK v6](https://ai-sdk.dev) + `@ai-sdk/anthropic`, `@ai-sdk/openai`, `@ai-sdk/react` |
+| Model            | Provider-agnostic. Default: Anthropic Claude (`claude-sonnet-4-6`). Set `AI_PROVIDER=openai` for GPT (`gpt-4o`). See `lib/model.ts`. |
 | Web search       | [Exa](https://exa.ai) via `exa-js`                                                    |
 | Schemas          | [Zod 4](https://zod.dev) for tool input validation                                    |
 | Persistence      | None. Inbox state lives in AgentMail; assistants live in code.                        |

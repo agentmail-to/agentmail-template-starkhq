@@ -8,6 +8,9 @@ dependencies:
   '@ai-sdk/anthropic':
     specifier: ^3.0.75
     version: 3.0.75(zod@4.4.3)
+  '@ai-sdk/openai':
+    specifier: ^3.0.64
+    version: 3.0.64(zod@4.4.3)
   '@ai-sdk/react':
     specifier: ^3.0.187
     version: 3.0.187(react@19.2.4)(zod@4.4.3)
@@ -99,6 +102,17 @@ packages:
       '@ai-sdk/provider': 3.0.10
       '@ai-sdk/provider-utils': 4.0.27(zod@4.4.3)
       '@vercel/oidc': 3.2.0
+      zod: 4.4.3
+    dev: false
+
+  /@ai-sdk/openai@3.0.64(zod@4.4.3):
+    resolution: {integrity: sha512-epO4iS6QwktaY2PF6uBcPnDTJ3BxPOfsGS7/OEtBe3GtNj7C8h8gMDVtIe5K8W16HNDbn0tbR4dcQfpfs+XVFg==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.76 || ^4.1.8
+    dependencies:
+      '@ai-sdk/provider': 3.0.10
+      '@ai-sdk/provider-utils': 4.0.27(zod@4.4.3)
       zod: 4.4.3
     dev: false
 

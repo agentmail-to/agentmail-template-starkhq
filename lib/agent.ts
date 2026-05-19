@@ -4,12 +4,10 @@ import {
     stepCountIs,
     type ModelMessage,
 } from "ai";
-import { anthropic } from "@ai-sdk/anthropic";
 import { ensureProvisioned, type Assistant } from "./assistants";
 import { buildTools } from "./tools";
 import { getAgentMail } from "./agentmail";
-
-const MODEL_ID = "claude-sonnet-4-6";
+import { getModel } from "./model";
 
 /**
  * Streamed turn initiated from the chat UI. The principal addresses an
@@ -32,7 +30,7 @@ export async function streamUserTurn({
     const provisioned = await ensureProvisioned(assistant);
     const tools = buildTools({ assistant: provisioned });
     return streamText({
-        model: anthropic(MODEL_ID),
+        model: getModel(),
         system: `${provisioned.systemPrompt}
 
 When the principal asks about replies, responses, or the status of an existing thread, USE list_threads and get_thread to actually read the inbox before answering. Don't claim you have no context — you have tools to look.`,
@@ -102,7 +100,7 @@ export async function runInboundTurn({
     });
 
     return generateText({
-        model: anthropic(MODEL_ID),
+        model: getModel(),
         system: `${provisioned.systemPrompt}
 
 You just received a new email in an ongoing thread. Read the full thread carefully and decide what to do:
